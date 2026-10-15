@@ -36,12 +36,15 @@ endif()
 add_executable(app main.cpp)
 target_link_libraries(app PRIVATE arraylib)
 
-foreach(target app)
+add_executable(variant_21 examples/variant_21.cpp)
+target_link_libraries(variant_21 PRIVATE arraylib)
+
+foreach(target app variant_21)
     set_output_directory(${target})
 endforeach()
 set_output_directory(arraylib)
 set_output_directory(arraylib_static)
-set_target_properties(app PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}")
+set_target_properties(app variant_21 PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}")
 
 include(CTest)
 if(BUILD_TESTING)
