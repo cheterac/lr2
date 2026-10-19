@@ -4,6 +4,7 @@ project(arraylib VERSION 1.0.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_BUILD_RPATH_USE_ORIGIN TRUE)
 
 function(set_output_directory target)
     set_target_properties(${target} PROPERTIES
@@ -44,7 +45,18 @@ foreach(target app variant_21)
 endforeach()
 set_output_directory(arraylib)
 set_output_directory(arraylib_static)
-set_target_properties(app variant_21 PROPERTIES BUILD_RPATH "${CMAKE_BINARY_DIR}")
+if(APPLE)
+    set(_arraylib_rpath "@loader_path")
+elseif(UNIX)
+    set(_arraylib_rpath "$ORIGIN")
+endif()
+if(DEFINED _arraylib_rpath)
+    set_target_properties(app variant_21 PROPERTIES BUILD_RPATH "${_arraylib_rpath}")
+    set_target_properties(app variant_21 PROPERTIES
+        INSTALL_RPATH "${_arraylib_rpath}"
+        BUILD_WITH_INSTALL_RPATH TRUE
+    )
+endif()
 
 include(CTest)
 if(BUILD_TESTING)
